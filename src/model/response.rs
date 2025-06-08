@@ -1,6 +1,5 @@
-use serde::Deserialize;
-
 use super::error::CobaltError;
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 #[serde(tag = "status", rename_all = "kebab-case")]
@@ -21,15 +20,15 @@ pub enum DownloadResponse {
         output: Output,
         #[serde(skip_serializing_if = "Option::is_none")]
         audio: Option<Audio>,
-        #[serde(skip_serializing_if = "Option::is_none")]
+        #[serde(rename = "isHLS", skip_serializing_if = "Option::is_none")]
         is_hls: Option<bool>,
     },
     Picker {
+        picker: Vec<PickerItem>,
         #[serde(skip_serializing_if = "Option::is_none")]
         audio: Option<String>,
-        #[serde(skip_serializing_if = "Option::is_none")]
+        #[serde(rename = "audioFilename", skip_serializing_if = "Option::is_none")]
         audio_filename: Option<String>,
-        picker: Vec<PickerItem>,
     },
     Error {
         error: CobaltError,
@@ -47,11 +46,17 @@ pub struct Output {
 
 #[derive(Debug, Deserialize)]
 pub struct OutputMetadata {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub album: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub copyright: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub artist: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub track: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<String>,
 }
 
@@ -65,13 +70,14 @@ pub struct Audio {
 #[derive(Debug, Deserialize)]
 pub struct PickerItem {
     #[serde(rename = "type")]
-    pub kind: String, // "photo", "video", "gif"
+    pub kind: String, // Expected to be "photo", "video", or "gif"
     pub url: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub thumb: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum LocalProcessingKind {
     Merge,
     Mute,
