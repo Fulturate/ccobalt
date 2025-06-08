@@ -5,7 +5,7 @@ use crate::model::request::DownloadRequest;
 use crate::model::response::DownloadResponse;
 use reqwest::{
     Client as HttpClient, Url,
-    header::{AUTHORIZATION, CONTENT_TYPE},
+    header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
 };
 
 #[derive(Debug, Clone)]
@@ -61,11 +61,11 @@ impl Client {
     ) -> Result<DownloadResponse, CobaltError> {
         let mut req = self.http.post(self.base_url.clone()).json(request);
 
-        req = req.header(AUTHORIZATION, "application/json");
+        req = req.header(ACCEPT, "application/json");
         req = req.header(CONTENT_TYPE, "application/json");
 
         if let Some(key) = &self.api_key {
-            req = req.header("Authorization", format!("Api-Key {key}"));
+            req = req.header(AUTHORIZATION, format!("Api-Key {key}"));
         }
 
         let res = req.send().await.map_err(|e| CobaltError {
