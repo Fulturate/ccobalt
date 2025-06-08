@@ -65,7 +65,7 @@ impl Client {
         req = req.header(CONTENT_TYPE, "application/json");
 
         if let Some(key) = &self.api_key {
-            req = req.header("Authorization", format!("Api-Key, {key}"));
+            req = req.header("Authorization", format!("Api-Key {key}"));
         }
 
         let res = req.send().await.map_err(|e| CobaltError {
