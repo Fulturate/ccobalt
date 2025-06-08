@@ -1,6 +1,6 @@
 [package]
 name = "ccobalt"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["iku <iku@cleesim.com>"]
 description = "A Rust library to download media using the Cobalt API."
 documentation = "https://docs.rs/ccobalt"
