@@ -14,7 +14,7 @@ use ccobalt::{
 async fn main() {
     let client = Client::builder()
         .base_url("https://api.example.com/")
-        .api_key("YOU_API_KEY")
+        .api_key("YOUR_API_KEY")
         .build()
         .unwrap();
 
