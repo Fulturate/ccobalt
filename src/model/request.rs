@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct DownloadRequest {
     pub url: String, // required
@@ -9,7 +9,7 @@ pub struct DownloadRequest {
     pub audio_bitrate: Option<AudioBitrate>, // default: 128
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub audio_format: Option<AudioFormat>, // default: mp4
+    pub audio_format: Option<AudioFormat>, // default: mp3
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub download_mode: Option<DownloadMode>, // default: auto
@@ -30,24 +30,25 @@ pub struct DownloadRequest {
     pub local_processing: Option<bool>, // default: false
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub service_options: Option<ServiceOptions>, // service-specific options
-}
+    pub youtube_video_codec: Option<YoutubeVideoCodec>, // h264 / av1 / vp9
 
-impl Default for DownloadRequest {
-    fn default() -> Self {
-        Self {
-            url: String::new(),
-            audio_bitrate: None,
-            audio_format: None,
-            download_mode: None,
-            filename_style: None,
-            video_quality: None,
-            disable_metadata: None,
-            always_proxy: None,
-            local_processing: None,
-            service_options: None,
-        }
-    }
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub youtube_dub_lang: Option<String>, // e.g. "en", "zh-CN"
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub convert_gif: Option<bool>, // default: true
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_h265: Option<bool>, // default: false
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tiktok_full_audio: Option<bool>, // default: false
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub youtube_better_audio: Option<bool>, // default: false
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub youtube_hls: Option<bool>, // default: false
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -124,43 +125,4 @@ pub enum YoutubeVideoCodec {
     H264,
     Av1,
     Vp9,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ServiceOptions {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub youtube_video_codec: Option<YoutubeVideoCodec>, // h264 / av1 / vp9
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub youtube_dub_lang: Option<String>, // e.g. "en", "zh-CN"
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub convert_gif: Option<bool>, // default: true
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub allow_h265: Option<bool>, // default: false
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tiktok_full_audio: Option<bool>, // default: false
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub youtube_better_audio: Option<bool>, // default: false
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub youtube_hls: Option<bool>, // default: false
-}
-
-impl Default for ServiceOptions {
-    fn default() -> Self {
-        Self {
-            youtube_video_codec: None,
-            youtube_dub_lang: None,
-            convert_gif: None,
-            allow_h265: None,
-            tiktok_full_audio: None,
-            youtube_better_audio: None,
-            youtube_hls: None,
-        }
-    }
 }
