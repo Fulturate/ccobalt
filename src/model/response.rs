@@ -15,7 +15,7 @@ pub enum DownloadResponse {
     },
     LocalProcessing {
         #[serde(rename = "type")]
-        kind: String, // or you can enum this: Merge, Mute, Audio, Gif, Remux
+        kind: LocalProcessingKind,
         service: String,
         tunnel: Vec<String>,
         output: Output,
@@ -69,4 +69,13 @@ pub struct PickerItem {
     pub url: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub thumb: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub enum LocalProcessingKind {
+    Merge,
+    Mute,
+    Audio,
+    Gif,
+    Remux,
 }
