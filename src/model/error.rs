@@ -51,3 +51,26 @@ impl fmt::Display for CobaltError {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_error_display() {
+        let error = CobaltError {
+            code: "error.api.unreachable".to_string(),
+            context: None,
+        };
+        assert_eq!(format!("{}", error), "API unreachable (try again later)");
+    }
+
+    #[test]
+    fn test_error_unknown() {
+        let error = CobaltError {
+            code: "error.api.unknown".to_string(),
+            context: None,
+        };
+        assert_eq!(format!("{}", error), "error.api.unknown");
+    }
+}

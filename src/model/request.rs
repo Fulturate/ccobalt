@@ -126,3 +126,33 @@ pub enum YoutubeVideoCodec {
     Av1,
     Vp9,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_download_request_serialization() {
+        let request = DownloadRequest {
+            url: "https://example.com/video".to_string(),
+            audio_bitrate: Some(AudioBitrate::Kbps128),
+            audio_format: Some(AudioFormat::Mp3),
+            download_mode: Some(DownloadMode::Auto),
+            filename_style: Some(FilenameStyle::Pretty),
+            video_quality: Some(VideoQuality::Q1080),
+            disable_metadata: Some(false),
+            always_proxy: Some(false),
+            local_processing: Some(true),
+            youtube_video_codec: Some(YoutubeVideoCodec::H264),
+            youtube_dub_lang: Some("en".to_string()),
+            convert_gif: Some(true),
+            allow_h265: Some(false),
+            tiktok_full_audio: Some(false),
+            youtube_better_audio: Some(true),
+            youtube_hls: Some(false),
+        };
+
+        let serialized = serde_json::to_string(&request).unwrap();
+        println!("{}", serialized);
+    }
+}

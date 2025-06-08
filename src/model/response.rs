@@ -85,3 +85,26 @@ pub enum LocalProcessingKind {
     Gif,
     Remux,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::from_str;
+
+    #[test]
+    fn test_tunnel_response() {
+        let json = r#"{
+            "status": "tunnel",
+            "url": "https://example.com/video.mp4",
+            "filename": "video.mp4"
+        }"#;
+
+        let res: DownloadResponse = from_str(json).unwrap();
+        if let DownloadResponse::Tunnel { url, filename } = res {
+            assert_eq!(filename, "video.mp4");
+            assert!(url.contains("example.com"));
+        } else {
+            panic!("Expected tunnel response");
+        }
+    }
+}
