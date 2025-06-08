@@ -33,6 +33,23 @@ pub struct DownloadRequest {
     pub service_options: Option<ServiceOptions>, // service-specific options
 }
 
+impl Default for DownloadRequest {
+    fn default() -> Self {
+        Self {
+            url: String::new(),
+            audio_bitrate: None,
+            audio_format: None,
+            download_mode: None,
+            filename_style: None,
+            video_quality: None,
+            disable_metadata: None,
+            always_proxy: None,
+            local_processing: None,
+            service_options: None,
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum AudioBitrate {
