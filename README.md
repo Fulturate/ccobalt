@@ -16,7 +16,7 @@ async fn main() {
         .base_url("https://api.example.com/")
         .api_key("YOUR_API_KEY")
         .build()
-        .unwrap();
+        .expect("Failed to build client");
 
     let request = DownloadRequest {
         url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ".to_string(),
@@ -24,12 +24,12 @@ async fn main() {
         ..Default::default()
     };
 
-    match client.download(&request).await {
-        Ok(response) => {
-            println!("Success: {:#?}", response);
+    match client.download_and_save(&request, "download", ".").await {
+        Ok(path) => {
+            println!("File saved to: {:?}", path);
         }
         Err(err) => {
-            eprintln!("Error: {}", err);
+            eprintln!("Download failed: {}", err);
         }
     }
 }

@@ -2,6 +2,30 @@ use super::error::CobaltError;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
+pub struct InfoResponse {
+    pub cobalt: CobaltInfo,
+    pub git: GitInfo,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CobaltInfo {
+    pub version: String,
+    pub url: String,
+    #[serde(rename = "startTime")]
+    pub start_time: String,
+    #[serde(rename = "turnstileSitekey")]
+    pub turnstile_sitekey: String,
+    pub services: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GitInfo {
+    pub branch: String,
+    pub commit: String,
+    pub remote: String,
+}
+
+#[derive(Debug, Deserialize)]
 #[serde(tag = "status", rename_all = "kebab-case")]
 pub enum DownloadResponse {
     Tunnel {
@@ -33,6 +57,41 @@ pub enum DownloadResponse {
     Error {
         error: CobaltError,
     },
+}
+
+impl DownloadResponse {
+    pub fn is_error(&self) -> bool {
+        matches!(self, DownloadResponse::Error { .. })
+    }
+
+    pub fn is_tunnel(&self) -> bool {
+        matches!(self, DownloadResponse::Tunnel { .. })
+    }
+
+    pub fn is_redirect(&self) -> bool {
+        matches!(self, DownloadResponse::Redirect { .. })
+    }
+
+    pub fn is_local_processing(&self) -> bool {
+        matches!(self, DownloadResponse::LocalProcessing { .. })
+    }
+
+    pub fn is_picker(&self) -> bool {
+        matches!(self, DownloadResponse::Picker { .. })
+    }
+
+    /// Get the download URL if available.
+    pub fn get_download_url(&self) -> Option<String> {
+        match self {
+            DownloadResponse::Tunnel { url, .. } => Some(url.clone()),
+            DownloadResponse::Redirect { url, .. } => Some(url.clone()),
+            DownloadResponse::LocalProcessing { tunnel, .. } => {
+                Some(tunnel.first().cloned().unwrap_or_default())
+            }
+            DownloadResponse::Picker { .. } => None,
+            DownloadResponse::Error { .. } => None,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]
