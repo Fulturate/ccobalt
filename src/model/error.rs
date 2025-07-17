@@ -47,6 +47,7 @@ impl fmt::Display for CobaltError {
             "error.api.youtube.decipher" => f.write_str("Cannot decipher that video. Something probably broke."),
             "error.api.youtube.login" => f.write_str("That video requires a logged in account, which we do not have."),
             "error.api.youtube.token_expired" => f.write_str("Our YouTube token expired (try again later)"),
+            "error.api.youtube.temporary_disabled" => f.write_str("YouTube support is temporarily disabled. Try again later."),
             _ => f.write_str(&self.code),
         }
     }
