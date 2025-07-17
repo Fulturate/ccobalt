@@ -66,6 +66,10 @@ impl ClientBuilder {
     pub fn build(self) -> Result<Client, url::ParseError> {
         let base_url = self.base_url.expect("base_url is required");
 
+        if self.api_key.is_none() && self.bearer_token.is_none() {
+            panic!("Must set either api_key or bearer_token");
+        }
+
         if self.api_key.is_some() && self.bearer_token.is_some() {
             panic!("Cannot set both api_key and bearer_token");
         }
