@@ -23,6 +23,7 @@ pub struct ClientBuilder {
     api_key: Option<String>,
     bearer_token: Option<String>,
     http: Option<Arc<HttpClient>>,
+    user_agent: Option<String>,
 }
 
 impl ClientBuilder {
@@ -43,13 +44,7 @@ impl ClientBuilder {
     }
 
     pub fn user_agent(mut self, user_agent: impl Into<String>) -> Self {
-        self.http = Some(Arc::new(
-            HttpClient::builder()
-                .user_agent(user_agent.into())
-                .build()
-                .unwrap(),
-        ));
-
+        self.user_agent = Some(user_agent.into());
         self
     }
 
@@ -85,7 +80,17 @@ impl ClientBuilder {
             panic!("Cannot set both api_key and bearer_token");
         }
 
-        let http_client = self.http.unwrap_or_else(|| Arc::new(HttpClient::new()));
+        let http_client = self.http.unwrap_or_else(|| {
+            Arc::new(
+                HttpClient::builder()
+                    .user_agent(
+                        self.user_agent
+                            .unwrap_or_else(|| "ccobalt/0.0.1 (+client)".to_string()),
+                    )
+                    .build()
+                    .unwrap(),
+            )
+        });
 
         Ok(Client {
             base_url: base_url.parse()?,
