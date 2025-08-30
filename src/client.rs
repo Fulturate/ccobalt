@@ -42,6 +42,17 @@ impl ClientBuilder {
         self
     }
 
+    pub fn user_agent(mut self, user_agent: impl Into<String>) -> Self {
+        self.http = Some(Arc::new(
+            HttpClient::builder()
+                .user_agent(user_agent.into())
+                .build()
+                .unwrap(),
+        ));
+
+        self
+    }
+
     /// Sets the API key for authentication.
     pub fn api_key(mut self, key: impl Into<String>) -> Self {
         self.api_key = Some(key.into());
