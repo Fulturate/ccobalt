@@ -148,6 +148,7 @@ impl Client {
         let mut req = self.http.post(self.base_url.clone()).json(request);
 
         req = req.header(ACCEPT, "application/json");
+        req = req.header(USER_AGENT, &self.user_agent);
         req = req.header(CONTENT_TYPE, "application/json");
 
         if let Some(key) = &self.api_key {
