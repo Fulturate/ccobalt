@@ -2,6 +2,7 @@ use crate::model::request::DownloadRequest;
 use crate::model::response::DownloadResponse;
 use crate::model::{error::CobaltError, response::InfoResponse};
 use log::info;
+use reqwest::header::USER_AGENT;
 use reqwest::{
     Client as HttpClient, Url,
     header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
@@ -15,6 +16,7 @@ pub struct Client {
     api_key: Option<String>,
     bearer_token: Option<String>,
     http: Arc<HttpClient>,
+    user_agent: String,
 }
 
 #[derive(Debug, Default)]
@@ -80,13 +82,14 @@ impl ClientBuilder {
             panic!("Cannot set both api_key and bearer_token");
         }
 
+        let user_agent = self
+            .user_agent
+            .unwrap_or_else(|| "ccobalt/0.0.1 (+client)".to_string());
+
         let http_client = self.http.unwrap_or_else(|| {
             Arc::new(
                 HttpClient::builder()
-                    .user_agent(
-                        self.user_agent
-                            .unwrap_or_else(|| "ccobalt/0.0.1 (+client)".to_string()),
-                    )
+                    .user_agent(user_agent.clone())
                     .build()
                     .unwrap(),
             )
@@ -96,6 +99,7 @@ impl ClientBuilder {
             base_url: base_url.parse()?,
             api_key: self.api_key,
             bearer_token: self.bearer_token,
+            user_agent: user_agent,
             http: http_client,
         })
     }
@@ -112,13 +116,14 @@ impl Client {
         let mut req = self.http.get(self.base_url.clone());
 
         req = req.header(ACCEPT, "application/json");
+        req = req.header(USER_AGENT, &self.user_agent);
 
         let res = req.send().await.map_err(|_| CobaltError {
             code: "error.api.unreachable".into(),
             context: None,
         })?;
 
-        info!("{:#?}", res.headers());
+        info!("{:#?}", res);
 
         // let status = res.status();
         let body = res.text().await.map_err(|_| CobaltError {
