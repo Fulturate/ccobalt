@@ -1,13 +1,13 @@
-use std::str::FromStr;
-use std::sync::Arc;
-
 use crate::model::request::DownloadRequest;
 use crate::model::response::DownloadResponse;
 use crate::model::{error::CobaltError, response::InfoResponse};
+use log::info;
 use reqwest::{
     Client as HttpClient, Url,
     header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
 };
+use std::str::FromStr;
+use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub struct Client {
@@ -112,6 +112,8 @@ impl Client {
             code: "error.api.unreachable".into(),
             context: None,
         })?;
+
+        info!("{:#?}", res.headers());
 
         // let status = res.status();
         let body = res.text().await.map_err(|_| CobaltError {
