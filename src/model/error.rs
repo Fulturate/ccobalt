@@ -53,6 +53,8 @@ impl fmt::Display for CobaltError {
     }
 }
 
+impl std::error::Error for CobaltError {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
