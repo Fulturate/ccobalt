@@ -1,7 +1,7 @@
 use crate::model::request::DownloadRequest;
 use crate::model::response::DownloadResponse;
 use crate::model::{error::CobaltError, response::InfoResponse};
-use log::info;
+use log::debug;
 use reqwest::header::USER_AGENT;
 use reqwest::{
     Client as HttpClient, Url,
@@ -99,7 +99,7 @@ impl ClientBuilder {
             base_url: base_url.parse()?,
             api_key: self.api_key,
             bearer_token: self.bearer_token,
-            user_agent: user_agent,
+            user_agent,
             http: http_client,
         })
     }
@@ -123,9 +123,6 @@ impl Client {
             context: None,
         })?;
 
-        info!("{:#?}", res);
-
-        // let status = res.status();
         let body = res.text().await.map_err(|_| CobaltError {
             code: "error.api.timed_out".into(),
             context: None,
@@ -148,7 +145,6 @@ impl Client {
         let mut req = self.http.post(self.base_url.clone()).json(request);
 
         req = req.header(ACCEPT, "application/json");
-        req = req.header(USER_AGENT, &self.user_agent);
         req = req.header(CONTENT_TYPE, "application/json");
 
         if let Some(key) = &self.api_key {
@@ -162,14 +158,16 @@ impl Client {
             context: None,
         })?;
 
-        // let status = res.status();
         let body = res.text().await.map_err(|_| CobaltError {
             code: "error.api.timed_out".into(),
             context: None,
         })?;
 
         match serde_json::from_str::<DownloadResponse>(&body) {
-            Ok(parsed) => Ok(parsed),
+            Ok(parsed) => {
+                debug!("ccobalt: {:#?}", parsed);
+                Ok(parsed)
+            }
             Err(_) => Err(CobaltError {
                 code: "error.api.unknown_response".into(),
                 context: None,
