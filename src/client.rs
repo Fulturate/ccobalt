@@ -1,7 +1,7 @@
 use crate::model::request::DownloadRequest;
 use crate::model::response::DownloadResponse;
 use crate::model::{error::CobaltError, response::InfoResponse};
-use log::debug;
+use log::info;
 use reqwest::header::USER_AGENT;
 use reqwest::{
     Client as HttpClient, Url,
@@ -165,7 +165,7 @@ impl Client {
 
         match serde_json::from_str::<DownloadResponse>(&body) {
             Ok(parsed) => {
-                debug!("ccobalt: {:#?}", parsed);
+                info!("ccobalt: {:#?}", parsed);
                 Ok(parsed)
             }
             Err(_) => Err(CobaltError {
