@@ -17,6 +17,7 @@ pub struct Client {
     bearer_token: Option<String>,
     http: Arc<HttpClient>,
     user_agent: String,
+    no_api_key: bool,
 }
 
 #[derive(Debug, Default)]
@@ -26,6 +27,7 @@ pub struct ClientBuilder {
     bearer_token: Option<String>,
     http: Option<Arc<HttpClient>>,
     user_agent: Option<String>,
+    no_api_key: bool,
 }
 
 impl ClientBuilder {
@@ -70,15 +72,23 @@ impl ClientBuilder {
         self
     }
 
+    /// Sets the boolean value whether api requires any authentic method
+    ///
+    /// If not set, returns false
+    pub fn no_api_key(mut self, value: bool) -> Self {
+        self.no_api_key = value;
+        self
+    }
+
     /// Builds the `Client` instance.
     pub fn build(self) -> Result<Client, url::ParseError> {
         let base_url = self.base_url.expect("base_url is required");
 
-        if self.api_key.is_none() && self.bearer_token.is_none() {
+        if !self.no_api_key && self.api_key.is_none() && self.bearer_token.is_none() {
             panic!("Must set either api_key or bearer_token");
         }
 
-        if self.api_key.is_some() && self.bearer_token.is_some() {
+        if !self.no_api_key && self.api_key.is_some() && self.bearer_token.is_some() {
             panic!("Cannot set both api_key and bearer_token");
         }
 
@@ -101,6 +111,7 @@ impl ClientBuilder {
             bearer_token: self.bearer_token,
             user_agent,
             http: http_client,
+            no_api_key: self.no_api_key,
         })
     }
 }
@@ -147,9 +158,13 @@ impl Client {
         req = req.header(ACCEPT, "application/json");
         req = req.header(CONTENT_TYPE, "application/json");
 
-        if let Some(key) = &self.api_key {
+        if !self.no_api_key
+            && let Some(key) = &self.api_key
+        {
             req = req.header(AUTHORIZATION, format!("Api-Key {key}"));
-        } else if let Some(token) = &self.bearer_token {
+        } else if !self.no_api_key
+            && let Some(token) = &self.bearer_token
+        {
             req = req.header(AUTHORIZATION, format!("Bearer {token}"));
         }
 

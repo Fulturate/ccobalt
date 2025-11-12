@@ -41,7 +41,7 @@ pub enum DownloadResponse {
         kind: LocalProcessingKind,
         service: String,
         tunnel: Vec<String>,
-        output: Output,
+        output: Box<Output>,
         #[serde(skip_serializing_if = "Option::is_none")]
         audio: Option<Audio>,
         #[serde(rename = "isHLS", skip_serializing_if = "Option::is_none")]
