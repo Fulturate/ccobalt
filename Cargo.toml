@@ -1,11 +1,11 @@
 [package]
 name = "ccobalt"
-version = "0.2.1"
-authors = ["iku <iku@cleesim.com>"]
+version = "0.2.2"
+authors = ["nixxoq <nixxoq@outlook.com>", "iku <iku@cleesim.com>"]
 description = "A Rust library to download media using the Cobalt API."
 documentation = "https://docs.rs/ccobalt"
-homepage = "https://github.com/CleeSim/ccobalt"
-repository = "https://github.com/CleeSim/ccobalt.git"
+homepage = "https://github.com/Fulturate/ccobalt"
+repository = "https://github.com/Fulturate/ccobalt.git"
 keywords = ["cobalt", "tools", "download", "api"]
 license = "MIT"
 edition = "2024"

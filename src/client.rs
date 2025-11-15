@@ -190,6 +190,31 @@ impl Client {
         }
     }
 
+    /// Retrieves download information and returns the file size from the Content-Length header without downloading the file.
+    ///
+    /// Returns `Ok(None)` if the `Content-Length` header is not present or if no direct download URL is available.
+    pub async fn get_size(&self, request: &DownloadRequest) -> Result<Option<u64>, CobaltError> {
+        let response = self.resolve_download(request).await?;
+
+        if let Some(url) = response.get_download_url() {
+            let head_resp = self.http.head(&url).send().await.map_err(|_| CobaltError {
+                code: "error.api.head_request_failed".into(),
+                context: None,
+            })?;
+
+            if !head_resp.status().is_success() {
+                return Err(CobaltError {
+                    code: "error.api.head_request_failed".into(),
+                    context: None,
+                });
+            }
+
+            Ok(head_resp.content_length())
+        } else {
+            Ok(None)
+        }
+    }
+
     /// Retrieves download information and downloads the file from the stream URL if available.
     pub async fn download(&self, request: &DownloadRequest) -> Result<Vec<u8>, CobaltError> {
         let response = self.resolve_download(request).await?;
